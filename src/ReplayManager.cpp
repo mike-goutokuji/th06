@@ -15,6 +15,7 @@
 namespace th06
 {
 DIFFABLE_STATIC(ReplayManager *, g_ReplayManager)
+DIFFABLE_STATIC_ASSIGN(u32, g_ReplayMagic) = REPLAY_MAGIC;
 
 #pragma var_order(idx, decryptedData, obfOffset, obfuscateCursor, checksum, checksumCursor)
 ZunResult ReplayManager::ValidateReplayData(ReplayData *data, i32 fileSize)
@@ -34,7 +35,7 @@ ZunResult ReplayManager::ValidateReplayData(ReplayData *data, i32 fileSize)
     }
 
     /* "T6RP" magic bytes */
-    if (*(i32 *)decryptedData->magic != *(i32 *)"T6RP")
+    if (decryptedData->magic != g_ReplayMagic)
     {
         return ZUN_ERROR;
     }
@@ -49,9 +50,9 @@ ZunResult ReplayManager::ValidateReplayData(ReplayData *data, i32 fileSize)
     }
 
     /* Calculate the checksum */
-    /* (0x3f000318 + key + sum(c for c in decryptedData)) % (2 ** 32) */
+    /* (REPLAY_CHECKSUM_SEED + key + sum(c for c in decryptedData)) % (2 ** 32) */
     checksumCursor = (u8 *)&decryptedData->key;
-    checksum = 0x3f000318;
+    checksum = REPLAY_CHECKSUM_SEED;
     for (idx = 0; idx < fileSize - (i32)offsetof(ReplayData, key); idx += 1, checksumCursor += 1)
     {
         checksum += *checksumCursor;
@@ -221,7 +222,7 @@ ZunResult ReplayManager::AddedCallback(ReplayManager *mgr)
     if (mgr->replayData == NULL)
     {
         mgr->replayData = new ReplayData();
-        memcpy(&mgr->replayData->magic[0], "T6RP", 4);
+        mgr->replayData->magic = g_ReplayMagic;
         mgr->replayData->shottypeChara = g_GameManager.character * 2 + g_GameManager.shotType;
         mgr->replayData->version = 0x102;
         mgr->replayData->difficulty = g_GameManager.difficulty;
@@ -399,7 +400,7 @@ void ReplayManager::SaveReplay(char *replayPath, char *replayName)
 
                 // Calculate the checksum.
                 checksumCursor = (u8 *)&replayCopy.key;
-                checksum = 0x3f000318;
+                checksum = REPLAY_CHECKSUM_SEED;
                 for (stageIdx = 0; stageIdx < sizeof(ReplayData) - offsetof(ReplayData, key);
                      stageIdx += 1, checksumCursor += 1)
                 {

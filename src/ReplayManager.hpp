@@ -7,6 +7,11 @@
 
 namespace th06
 {
+
+#define REPLAY_CHECKSUM_SEED 0x3f000318
+
+DIFFABLE_EXTERN(u32, g_ReplayMagic);
+
 struct ReplayManager
 {
     static ZunResult RegisterChain(i32 isDemo, char *replayFile);

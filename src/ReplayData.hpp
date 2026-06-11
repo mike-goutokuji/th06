@@ -28,7 +28,7 @@ ZUN_ASSERT_SIZE(StageReplayData, 0x69780);
 
 struct ReplayData
 {
-    char magic[4];
+    u32 magic;
     u16 version;
     u8 shottypeChara;
     u8 difficulty;
@@ -46,4 +46,7 @@ struct ReplayData
     StageReplayData *stageReplayData[7];
 };
 ZUN_ASSERT_SIZE(ReplayData, 0x50);
+
+// 'T' '6' 'R' 'P' as little-endian u32 (same as *(i32 *)"T6RP").
+#define REPLAY_MAGIC 0x50523654
 }; // namespace th06
