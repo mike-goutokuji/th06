@@ -3,6 +3,8 @@
 #include "ZunMath.hpp"
 #include "ZunResult.hpp"
 #include "inttypes.hpp"
+#include <cstdarg>
+#include <stdio.h>
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 #define ARRAY_SIZE_SIGNED(x) ((i32)sizeof(x) / (i32)sizeof(x[0]))
@@ -22,8 +24,33 @@ namespace th06
 namespace utils
 {
 ZunResult CheckForRunningGameInstance(void);
-void DebugPrint(const char *fmt, ...);
-void DebugPrint2(const char *fmt, ...);
+static void DebugPrint(const char *fmt, ...)
+{
+#ifdef DEBUG
+    char tmpBuffer[512];
+    std::va_list args;
+
+    va_start(args, fmt);
+    vsprintf(tmpBuffer, fmt, args);
+    va_end(args);
+
+    printf("DEBUG: %s\n", tmpBuffer);
+#endif
+}
+
+static void DebugPrint2(const char *fmt, ...)
+{
+#ifdef DEBUG
+    char tmpBuffer[512];
+    std::va_list args;
+
+    va_start(args, fmt);
+    vsprintf(tmpBuffer, fmt, args);
+    va_end(args);
+
+    printf("DEBUG2: %s\n", tmpBuffer);
+#endif
+}
 
 f32 AddNormalizeAngle(f32 a, f32 b);
 void Rotate(D3DXVECTOR3 *outVector, D3DXVECTOR3 *point, f32 angle);

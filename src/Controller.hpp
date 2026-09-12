@@ -1,5 +1,6 @@
 #pragma once
 
+#include "diffbuild.hpp"
 #include "inttypes.hpp"
 
 namespace th06
@@ -47,4 +48,10 @@ u8 *GetControllerState();
 u16 GetInput(void);
 void ResetKeyboard(void);
 }; // namespace Controller
+
+DIFFABLE_EXTERN(u16, g_LastFrameInput)
+DIFFABLE_EXTERN(u16, g_CurFrameInput)
+DIFFABLE_EXTERN(u16, g_IsEigthFrameOfHeldInput)
+DIFFABLE_EXTERN(u16, g_NumOfFramesInputsWereHeld)
+
 }; // namespace th06
